@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const Book = require('../store/Book');
 const fileMulter = require('../middleware/file');
 
 router.post("/upload-book", fileMulter.single('book-name'),

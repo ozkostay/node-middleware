@@ -3,7 +3,7 @@ const router = express.Router();
 const Book = require('../store/Book');
 
 const store = {
-  books: [new Book(), new Book()],
+  books: [new Book('1','','','','','','book-name.pdf'), new Book()],
 };
 
 router.get("/api/books", (req, res) => {
@@ -90,6 +90,22 @@ router.delete("/api/books/:id", (req, res) => {
   } else {
     res.status(404);
     res.json("404 | страница не найдена");
+  }
+});
+
+router.get("/api/books/:id/download", (req, res) => {
+  const { books } = store;
+  const { id } = req.params;
+  const idx = books.findIndex((el) => el.id === id);
+  if (idx > -1) {
+    const path = `/public/books/${books[idx].fileName}`;
+    // Путь к файлу найден,
+    // Как запустить загрузку автоматически не пойму
+    res.status(201);
+    res.json(`Загружаем файл ${path}`);
+  } else {
+    res.status(500);
+    res.json(`Нет файла с ID=${id}`);
   }
 });
 

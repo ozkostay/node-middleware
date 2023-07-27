@@ -5,6 +5,7 @@ const demoRouter = require('./routers/demo');
 
 const app = express();
 app.use(express.json());
+app.use('/public', express.static(__dirname + '/public'));
 app.use('/', indexRouter);
 app.use('/file', demoRouter)
 
