@@ -37,7 +37,7 @@ router.get("/api/books/:id", (req, res) => {
 
 router.post("/api/books/", (req, res) => {
   const { books } = store;
-  const { title, description, authors, favorite, fileCover, fileName } =
+  const { title, description, authors, favorite, fileCover, fileName, fileBook } =
     req.body;
 
   const newBook = new Book(
@@ -46,7 +46,8 @@ router.post("/api/books/", (req, res) => {
     authors,
     favorite,
     fileCover,
-    fileName
+    fileName,
+    fileBook
   );
 
   books.push(newBook);
@@ -70,6 +71,7 @@ router.put("/api/books/:id", (req, res) => {
       favorite,
       fileCover,
       fileName,
+      fileBook
     };
 
     res.json(books[idx]);
@@ -98,11 +100,14 @@ router.get("/api/books/:id/download", (req, res) => {
   const { id } = req.params;
   const idx = books.findIndex((el) => el.id === id);
   if (idx > -1) {
-    const path = `/public/books/${books[idx].fileName}`;
-    // Путь к файлу найден,
-    // Как запустить загрузку автоматически не пойму
     res.status(201);
-    res.json(`Загружаем файл ${path}`);
+    const path = __dirname.slice(0, __dirname.lastIndexOf('/routers'))
+                 + `/public/books/${books[idx].fileName}`;
+    res.download(path, books[idx].fileName, err => {
+      if (err){
+        res.status(404).json();
+      }
+    });
   } else {
     res.status(500);
     res.json(`Нет файла с ID=${id}`);
