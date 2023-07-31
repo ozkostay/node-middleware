@@ -31,7 +31,10 @@ router.get("/api/books/:id", (req, res) => {
     res.json(books[idx]);
   } else {
     res.status(404);
-    res.json("404 | страница не найдена");
+    res.json({
+      status: 404,
+      errormsg: "404 | страница не найдена"
+    });
   }
 });
 
@@ -77,7 +80,10 @@ router.put("/api/books/:id", (req, res) => {
     res.json(books[idx]);
   } else {
     res.status(404);
-    res.json("404 | страница не найдена");
+    res.json({
+      status: 404,
+      errormsg: "404 | страница не найдена"
+    });
   }
 });
 
@@ -91,7 +97,10 @@ router.delete("/api/books/:id", (req, res) => {
     res.json(true);
   } else {
     res.status(404);
-    res.json("404 | страница не найдена");
+    res.json({
+      status: 404,
+      errormsg: "404 | страница не найдена"
+    });
   }
 });
 
@@ -110,7 +119,10 @@ router.get("/api/books/:id/download", (req, res) => {
     });
   } else {
     res.status(500);
-    res.json(`Нет файла с ID=${id}`);
+    res.json({
+      status: 500,
+      errormsg: `Нет файла с ID=${id}`
+    });
   }
 });
 
