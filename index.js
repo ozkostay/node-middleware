@@ -1,13 +1,10 @@
 const express = require("express");
 const { v4: uuid } = require("uuid");
-const indexRouter = require('./routers/index');
-const demoRouter = require('./routers/demo');
+const indexRouter = require("./routers/index");
 
 const app = express();
 app.use(express.json());
-app.use('/public', express.static(__dirname + '/public'));
-app.use('/', indexRouter);
-app.use('/file', demoRouter)
+app.use("/", indexRouter);
 
 const serverPort = process.env.PORT || 3000;
 const PORT = serverPort;

@@ -1,9 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Book = require('../store/Book');
+const Book = require("../store/Book");
+const fileMulter = require("../middleware/file");
 
 const store = {
-  books: [new Book('1','','','','','','book-name.pdf'), new Book()],
+  books: [new Book(), new Book()],
 };
 
 router.get("/api/books", (req, res) => {
@@ -17,11 +18,6 @@ router.post("/api/user/login", (req, res) => {
   res.json(returnObject);
 });
 
-router.get("/api/books", (req, res) => {
-  const { books } = store;
-  res.json(books);
-});
-
 router.get("/api/books/:id", (req, res) => {
   const { books } = store;
   const { id } = req.params;
@@ -33,17 +29,26 @@ router.get("/api/books/:id", (req, res) => {
     res.status(404);
     res.json({
       status: 404,
-      errormsg: "404 | страница не найдена"
+      errormsg: "404 | страница не найдена",
     });
   }
 });
 
-router.post("/api/books/", (req, res) => {
+router.post("/api/books/", fileMulter.single("book-name"), (req, res) => {
   const { books } = store;
-  const { title, description, authors, favorite, fileCover, fileName, fileBook } =
-    req.body;
+  const {
+    id,
+    title = "Название книги",
+    description,
+    authors,
+    favorite,
+    fileCover,
+    fileName = req.file.originalname,
+    fileBook = req.file.filename,
+  } = req.body;
 
   const newBook = new Book(
+    id,
     title,
     description,
     authors,
@@ -74,7 +79,7 @@ router.put("/api/books/:id", (req, res) => {
       favorite,
       fileCover,
       fileName,
-      fileBook
+      fileBook,
     };
 
     res.json(books[idx]);
@@ -82,7 +87,7 @@ router.put("/api/books/:id", (req, res) => {
     res.status(404);
     res.json({
       status: 404,
-      errormsg: "404 | страница не найдена"
+      errormsg: "404 | страница не найдена",
     });
   }
 });
@@ -99,7 +104,7 @@ router.delete("/api/books/:id", (req, res) => {
     res.status(404);
     res.json({
       status: 404,
-      errormsg: "404 | страница не найдена"
+      errormsg: "404 | страница не найдена",
     });
   }
 });
@@ -110,18 +115,22 @@ router.get("/api/books/:id/download", (req, res) => {
   const idx = books.findIndex((el) => el.id === id);
   if (idx > -1) {
     res.status(201);
-    const path = __dirname.slice(0, __dirname.lastIndexOf('/routers'))
-                 + `/public/books/${books[idx].fileName}`;
-    res.download(path, books[idx].fileName, err => {
-      if (err){
-        res.status(404).json();
+    const path =
+      __dirname.slice(0, __dirname.lastIndexOf("/routers")) +
+      `/public/books/${books[idx].fileBook}`;
+    res.download(path, books[idx].fileBook, (err) => {
+      if (err) {
+        res.status(404).json({
+          status: 404,
+          errormsg: `Нет файла с ID=${id}`,
+        });
       }
     });
   } else {
     res.status(500);
     res.json({
       status: 500,
-      errormsg: `Нет файла с ID=${id}`
+      errormsg: `Нет файла с ID=${id}`,
     });
   }
 });
